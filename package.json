@@ -1,0 +1,7 @@
+{
+    "name": "Bashcache",
+    "dependencies": {
+        "express": "4.15.4",
+        "body-parser":"1.18.1"
+    }
+}
