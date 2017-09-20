@@ -2,7 +2,7 @@ var app = require('express')();
 var bodyParser = require('body-parser');
 
 app.use(bodyParser.json())
-
+app.use(bodyParser.urlencoded({limit: '50mb'}))
 var cache = {};
 
 app.put('/:key/:value', function(req, res) {
