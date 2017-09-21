@@ -12,9 +12,7 @@ app.put('/:key', function(req, res) {
 
     cache[key] = data;
 
-    var url = req.hostname + req.path;
-
-    return res.send(url+'\n');
+    return res.send("bashcache.com/"+key+'\n');
 
 });
 
