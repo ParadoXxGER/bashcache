@@ -28,7 +28,7 @@ app.get('/:key', function(req, res) {
 
     res.set("Content-type", "text/html");
 
-    return res.send(data.value+'\n');
+    return res.send(data+'\n');
     
 });
 
