@@ -1,32 +1,41 @@
 var app = require('express')();
 var bodyParser = require('body-parser');
 
-app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({limit: '50mb'}))
+app.use(bodyParser.text({type: '*/*', limit: Infinity}));
 var cache = {};
 
-app.put('/:key/:value', function(req, res) {
+app.put('/:key', function(req, res) {
 
     var key = req.params.key;
-    var value = req.params.value;
 
-    cache[key] = value;
+    var data = req.body;
 
-    res.send(key+":"+value+'\n');
+    cache[key] = data;
+
+    var url = req.hostname + req.path;
+
+    return res.send(url+'\n');
 
 });
 
 app.get('/:key', function(req, res) {
     
     var key = req.params.key;
-    var value = cache[key]
 
-    if (!value){
+    var data = cache[key]
+
+    if (!data){
         return res.sendStatus(404);
     }
 
-    res.send(value+'\n');
+    res.set("Content-type", "text/html");
+
+    return res.send(data.value+'\n');
     
+});
+
+app.get('/', function(req, res){
+    return res.sendFile(__dirname + '/index.html');
 });
 
 app.listen(3000, function(){
