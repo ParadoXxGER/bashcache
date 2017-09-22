@@ -6,7 +6,7 @@ var os = require('os');
 
 app.use(bodyParser.text({ type: '*/*', limit: Infinity }));
 
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
     res.set('X-Backend-Host', os.hostname());
     next();
 });
@@ -19,7 +19,7 @@ app.put('/:key', function (req, res) {
 
         value = JSON.parse(value);
 
-        if(value === null){
+        if (value === null) {
             value = { locked: false, data: "" }
         }
 
@@ -47,7 +47,7 @@ app.lock('/:key', function (req, res) {
 
         value = JSON.parse(value);
 
-        if(value === null){
+        if (value === null) {
             return res.sendStatus(404);
         }
 
@@ -75,7 +75,7 @@ app.get('/:key', function (req, res) {
 
         value = JSON.parse(value);
 
-        if(value === null){
+        if (value === null) {
             return res.sendStatus(404);
         }
 
@@ -88,6 +88,32 @@ app.get('/:key', function (req, res) {
     });
 
 });
+
+app.delete('/:key', function (req, res) {
+    var key = req.params.key;
+
+    redis.get(key).then(function (value) {
+
+        value = JSON.parse(value);
+
+        if (value === null) {
+            return res.sendStatus(404);
+        }
+
+        if (value.locked === true) {
+            return res.sendStatus(423);
+        }
+
+        redis.del(key);
+        
+        res.set("Content-type", "text/html");
+
+        return res.sendStatus(200);
+
+    }).catch(function () {
+        res.sendStatus(500);
+    });
+})
 
 app.get('/', function (req, res) {
     return res.sendFile(__dirname + '/index.html');
