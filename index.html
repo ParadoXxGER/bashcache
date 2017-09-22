@@ -13,22 +13,39 @@
     <section class="section">
         <div class="container">
             <h1 class="title">
-                Bashcache - A dead simple http key/value store
+                😏 Bashcache - A dead simple http key/value store
             </h1>
             <br>
 
             <div class="content">
                 <h4>Let's start with an example:</h4>
                 <pre>curl -X PUT bashcache.com/key --data "value"</pre>
-                <pre>curl bashcache.com/key ~> value</pre>
-                <p>Sounds easy, right? Lets try some advanced stuff:</p>
+                <pre>$ curl bashcache.com/key
+value</pre>
+                <hr>
+                <h4>Sounds easy, right? Lets try some advanced stuff:</h4>
                 <p>Create a random hash key for a secret value:</p>
-                <pre>curl -X PUT bashcache.com/$(openssl rand -hex 12) --data "secret value"</pre>
-                <p>Try accessing:</p>
-                <pre>bashcache.com/0894abb1b622c49c9e7b3807</pre>
-                <p>The resource can be globally locked:</p>
-                <small>This means, that the cache is locked until it's get purged!</small>
-                <pre>curl -X LOCK bashcache.com/0894abb1b622c49c9e7b3807</pre>
+                <pre>$ curl -X PUT bashcache.com/$(openssl rand -hex 12) --data "secret value"
+bashcache.com/0894abb1b622c49c9e7b3807</pre>
+                <p>Try accessing it:</p>
+                <pre>$ curl bashcache.com/0894abb1b622c49c9e7b3807</pre>
+                <p>The resource can be globally locked: <small>NOTE: This means, that the cache is locked until it's get purged! First kamm first surf! 🏄</small></p>
+                <pre>$ curl -X LOCK bashcache.com/0894abb1b622c49c9e7b3807</pre>
+                <hr>
+                <h4>Another example for storing a txt file:</h4>
+                <pre>$ curl -X PUT bashcache.com/niklas-notes.txt --data "$(cat ~/Desktop/notes.txt)"</pre>
+                <p>Result:</p>
+                <pre>$ curl bashcache.com/niklas-notes.txt
+Hallo Welt,
+das ist eine Datei mit
+relativ vielen Zeichen
+
+Warum funktionieren die Umbrüche nicht?!</pre>
+            <hr>
+            <p>If you access the resource via a browser, it will be rendered as html where the \n Umbrüche won't work</p>
+            <p>For example you can do stuff like:</p>
+            <pre>curl -X PUT bashcache.com/example-site-to-present --data "$(cat ~/Desktop/index.html)"</pre>
+            <p>The result should be a copy of this site. (Note that assets must be delivered via a cdn or so.)</p>
             </div>
         </div>
     </section>
