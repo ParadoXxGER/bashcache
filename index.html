@@ -1,11 +1,37 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Bashcache</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bashcache - A dead simple http key/value store</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.5.3/css/bulma.min.css">
 </head>
+
 <body>
+    <section class="section">
+        <div class="container">
+            <h1 class="title">
+                Bashcache - A dead simple http key/value store
+            </h1>
+            <br>
+
+            <div class="content">
+                <h4>Let's start with an example:</h4>
+                <pre>curl -X PUT bashcache.com/key --data "value"</pre>
+                <pre>curl bashcache.com/key ~> value</pre>
+                <p>Sounds easy, right? Lets try some advanced stuff:</p>
+                <p>Create a random hash key for a secret value:</p>
+                <pre>curl -X PUT bashcache.com/$(openssl rand -hex 12) --data "secret value"</pre>
+                <p>Try accessing:</p>
+                <pre>bashcache.com/0894abb1b622c49c9e7b3807</pre>
+                <p>The resource can be globally locked:</p>
+                <small>This means, that the cache is locked until it's get purged!</small>
+                <pre>curl -X LOCK bashcache.com/0894abb1b622c49c9e7b3807</pre>
+            </div>
+        </div>
+    </section>
 </body>
+
 </html>
