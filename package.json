@@ -2,6 +2,7 @@
     "name": "Bashcache",
     "dependencies": {
         "express": "4.15.4",
-        "body-parser":"1.18.1"
+        "body-parser":"1.18.1",
+        "ioredis":"3.1.4"
     }
 }
