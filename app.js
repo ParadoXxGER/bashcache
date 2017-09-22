@@ -73,10 +73,6 @@ app.get('/:key', function (req, res) {
             return res.sendStatus(404);
         }
 
-        if (value.locked === true) {
-            return res.sendStatus(423)
-        }
-
         res.set("Content-type", "text/html");
 
         return res.send(value.data + '\n');
