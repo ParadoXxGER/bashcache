@@ -2,8 +2,14 @@ var app = require('express')();
 var bodyParser = require('body-parser');
 var Redis = require('ioredis');
 var redis = new Redis(6379, 'redis');
+var os = require('os');
 
 app.use(bodyParser.text({ type: '*/*', limit: Infinity }));
+
+app.use(function(req, res, next) {
+    res.set('X-Backend-Host', os.hostname());
+    next();
+});
 
 app.put('/:key', function (req, res) {
 
