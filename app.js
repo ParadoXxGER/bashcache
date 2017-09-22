@@ -8,7 +8,14 @@ app.put('/:key', function(req, res) {
 
     var key = req.params.key;
 
-    var data = req.body;
+    if(typeof cache[key] !== 'undefined' && cache[key].locked === true){
+        return res.sendStatus(423)
+    }
+
+    var data = {
+        "data": req.body,
+        "locked": false
+    }
 
     cache[key] = data;
 
@@ -16,13 +23,28 @@ app.put('/:key', function(req, res) {
 
 });
 
+app.lock('/:key', function(req, res) {
+
+    if(typeof cache[req.params.key] === 'undefined'){
+        return res.sendStatus(404);
+    }
+
+    if(cache[req.params.key].locked === true){
+        return res.sendStatus(423);
+    }
+
+    cache[req.params.key].locked = true;
+
+    res.sendStatus(200);
+});
+
 app.get('/:key', function(req, res) {
     
     var key = req.params.key;
 
-    var data = cache[key]
+    var data = cache[key].data
 
-    if (!data){
+    if (typeof data === 'undefined'){
         return res.sendStatus(404);
     }
 
