@@ -44,7 +44,8 @@ Warum funktionieren die Umbrüche nicht?!</pre>
             <hr>
             <p>If you access the resource via a browser, it will be rendered as html where the \n Umbrüche won't work</p>
             <p>For example you can do stuff like:</p>
-            <pre>curl -X PUT bashcache.com/example-site-to-present --data "$(cat ~/Desktop/index.html)"</pre>
+            <pre>$ curl -X PUT bashcache.com/index.html --data "$(cat ~/Desktop/index.html)"</pre>
+            <pre>$ curl bashcache.com/index.html</pre>
             <p>The result should be a copy of this site. (Note that assets must be delivered via a cdn or so.)</p>
             </div>
         </div>
