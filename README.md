@@ -20,7 +20,7 @@ Advanced examples:
 
 You can upload a image to bashcache via console:
 
-`curl -X PUT bashcache.com/$(openssl rand -hex 12) --data "<img src='data:image/png;base64,$(cat ~/Desktop/favicon_webspeak.png | base64)'>"`
+`curl -X PUT bashcache.com/$(openssl rand -hex 12) --data "<img src='data:image/png;base64,$(cat ~/Desktop/image.png | base64)'>"`
 
 Upload a file:
 
