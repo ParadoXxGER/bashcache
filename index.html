@@ -22,8 +22,6 @@
                 <pre>curl -X PUT bashcache.com/key --data "value"</pre>
                 <pre>$ curl bashcache.com/key
 value</pre>
-                <p>Any resource can be deleted, if it is not locked</p>
-                <pre>curl -X DELETE bashcache.com/key</pre>
                 <hr>
                 <h4>Sounds easy, right? Lets try some advanced stuff:</h4>
                 <p>Create a random hash key for a secret value:</p>
@@ -33,6 +31,8 @@ bashcache.com/0894abb1b622c49c9e7b3807</pre>
                 <pre>$ curl bashcache.com/0894abb1b622c49c9e7b3807</pre>
                 <p>The resource can be globally locked: <small>NOTE: This means, that the cache is locked until it's get purged! First kamm first surf! 🏄</small></p>
                 <pre>$ curl -X LOCK bashcache.com/0894abb1b622c49c9e7b3807</pre>
+                <p>Any resource can be deleted, if it is not locked</p>
+                <pre>curl -X DELETE bashcache.com/key</pre>
                 <hr>
                 <h4>Another example for storing a txt file:</h4>
                 <pre>$ curl -X PUT bashcache.com/niklas-notes.txt --data "$(cat ~/Desktop/notes.txt)"</pre>
