@@ -3,6 +3,8 @@ var bodyParser = require('body-parser');
 var Redis = require('ioredis');
 var redis = new Redis(6379, 'redis');
 var os = require('os');
+var swig  = require('swig');
+var index = swig.compileFile(__dirname + '/index.html');
 
 app.use(bodyParser.text({ type: '*/*', limit: Infinity }));
 
@@ -105,7 +107,7 @@ app.delete('/:key', function (req, res) {
         }
 
         redis.del(key);
-        
+
         res.set("Content-type", "text/html");
 
         return res.sendStatus(200);
@@ -116,7 +118,29 @@ app.delete('/:key', function (req, res) {
 })
 
 app.get('/', function (req, res) {
-    return res.sendFile(__dirname + '/index.html');
+
+
+    redis.dbsize().then(function(keys){
+
+        var output = index({
+            "keys": keys,
+        });
+
+        res.set("Content-type", "text/html");
+
+        return res.send(output);
+
+    }).catch(function(error){
+
+        var output = index({
+            "keys": "Error 😥",
+        });
+
+        res.set("Content-type", "text/html");
+
+        return res.send(output);
+    })
+    
 });
 
 app.listen(3000, function () {
