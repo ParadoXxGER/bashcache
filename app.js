@@ -82,7 +82,8 @@ app.get('/:key', function (req, res) {
         }
 
         res.set("Content-type", "text/html");
-
+        res.set(key, value.data)
+        
         return res.send(value.data + '\n');
 
     }).catch(function () {
@@ -115,7 +116,7 @@ app.delete('/:key', function (req, res) {
     }).catch(function () {
         res.sendStatus(500);
     });
-})
+});
 
 app.get('/', function (req, res) {
 
