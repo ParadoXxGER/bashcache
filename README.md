@@ -1,4 +1,5 @@
 # Bashcache
+## A dead simple http key/value store.
 
 ## Setup:
 
@@ -6,6 +7,9 @@
 2. Run "docker-compose build"
 3. Run "docker-compose up"
 4. Try accessing via: `curl localhost:3000`
+
+Note: Bashcache need redis to work properly
+Note: Add Docker volumes to persist redis data
 
 ## Examples
 
