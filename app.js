@@ -1,10 +1,8 @@
 var app = require('express')();
 var bodyParser = require('body-parser');
 var Redis = require('ioredis');
-var redis = new Redis(6379, 'redis');
 var os = require('os');
-var swig  = require('swig');
-var index = swig.compileFile(__dirname + '/index.html');
+var redis = new Redis(process.env.REDIS_URL);
 
 app.use(bodyParser.text({ type: '*/*', limit: Infinity }));
 
@@ -13,134 +11,130 @@ app.use(function (req, res, next) {
     next();
 });
 
-app.put('/:key', function (req, res) {
+app.use(function (req, res, next){
+    res.set("Content-type", "text/plain");
+    next();
+})
+
+app.put('/:key', async function (req, res) {
 
     var key = req.params.key;
 
-    redis.get(key).then(function (value) {
+    if(Object.keys(req.body).length === 0){
+        return res.status(400).send("Usage: curl -X PUT example.com/key --data 'value'\n")
+    }
 
-        value = JSON.parse(value);
+    var data = req.body;
 
-        if (value === null) {
-            value = { locked: false, data: "" }
-        }
+    try {
+        value = await redis.get(key);
+    } catch (error) {
+        console.log(error);
+        return res.send("Oops, Internal Server error! \n");
+    }
 
-        if (value.locked === true) {
-            return res.sendStatus(423)
-        }
+    value = JSON.parse(value);
 
-        value.data = req.body;
+    if (value === null) {
+        value = { locked: false, data: "" }
+    }
 
-        redis.set(key, JSON.stringify(value));
+    if (value.locked === true) {
+        return res.send("Oops, Resource is locked! \n");
+    }
 
-        return res.send("bashcache.com/" + key + '\n');
+    value.data = data;
 
-    }).catch(function (error) {
-        res.sendStatus(500);
-    });
+    redis.set(key, JSON.stringify(value));
+
+    return res.send(key +':'+value.data+'\n');
 
 });
 
-app.lock('/:key', function (req, res) {
+app.lock('/:key', async function (req, res) {
 
     var key = req.params.key;
 
-    redis.get(key).then(function (value) {
-
+    try {
+        value = await redis.get(key);
         value = JSON.parse(value);
+    } catch (error) {
+        console.log(error);
+        return res.send("Oops, Internal Server error! \n");
+    }
 
-        if (value === null) {
-            return res.sendStatus(404);
-        }
+    if (value === null) {
+        return res.send("Oops, Resource not found! \n");
+    }
 
-        if (value.locked === true) {
-            return res.sendStatus(423)
-        }
+    if (value.locked === true) {
+        return res.send("Oops, Resource is locked! \n");
+    }
 
-        value.locked = true;
+    value.locked = true;
 
-        redis.set(key, JSON.stringify(value));
+    redis.set(key, JSON.stringify(value));
 
-        return res.sendStatus(200);
-
-    }).catch(function () {
-        res.sendStatus(500);
-    });
+    return res.send("Resource locked! \n");
 
 });
 
-app.get('/:key', function (req, res) {
+app.get('/:key', async function (req, res) {
 
     var key = req.params.key;
 
-    redis.get(key).then(function (value) {
-
+    try {
+        value = await redis.get(key);
         value = JSON.parse(value);
+    } catch (error) {
+        console.log(error);
+        return res.send("Oops, Internal Server error! \n");
+    }
 
-        if (value === null) {
-            return res.sendStatus(404);
-        }
-
-        res.set("Content-type", "text/html");
-        res.set(key, value.data)
-        
-        return res.send(value.data + '\n');
-
-    }).catch(function () {
-        res.sendStatus(500);
-    });
+    if (value === null || !value) {
+        return res.send("Oops, Resource not found! \n");
+    }
+    
+    return res.send(value.data + '\n');
 
 });
 
-app.delete('/:key', function (req, res) {
+app.delete('/:key', async function (req, res) {
+    
     var key = req.params.key;
 
-    redis.get(key).then(function (value) {
-
+    try {
+        value = await redis.get(key);
         value = JSON.parse(value);
+    } catch (error) {
+        console.log(error);
+        return res.send("Oops, Internal Server error! \n");
+    }
+    
+    if (value === null) {
+        return res.send("Oops, Resource not found! \n");
+    }
 
-        if (value === null) {
-            return res.sendStatus(404);
-        }
+    if (value.locked === true) {
+        return res.send("Oops, Resource is locked! \n");
+    }
 
-        if (value.locked === true) {
-            return res.sendStatus(423);
-        }
+    redis.del(key);
 
-        redis.del(key);
-
-        res.set("Content-type", "text/html");
-
-        return res.sendStatus(200);
-
-    }).catch(function () {
-        res.sendStatus(500);
-    });
+    return res.send("OK \n");
 });
 
-app.get('/', function (req, res) {
+app.get('/', async function (req, res) {
 
+    try {
+        keys = await redis.dbsize();
+        value = JSON.parse(value);
+    } catch (error) {
+        console.log(error);
+        return res.send("Oops, Internal Server error! \n");
+    }
 
-    redis.dbsize().then(function(keys){
-
-        var output = index({
-            "keys": keys,
-        });
-
-        res.set("Content-type", "text/html");
-
-        return res.send(output);
-
-    }).catch(function(error){
-
-        var output = index({
-            "keys": "Error 😥",
-        });
-
-        res.set("Content-type", "text/html");
-
-        return res.send(output);
-    })
+    return res.send("Already "+keys+" keys cached!\n");
     
 });
 
