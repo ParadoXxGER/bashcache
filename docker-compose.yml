@@ -1,0 +1,14 @@
+version: '3'
+services:
+  bashcache-redis:
+    image: redis
+    ports:
+      - "6379:6379/tcp"
+  bashcache-backend:
+    build: .
+    ports:
+      - "3000:3000/tcp"
+    links:
+      - "bashcache-redis:redis"
+    environment:
+      - "REDIS_URL=redis://redis:6379/0/bashcache"
